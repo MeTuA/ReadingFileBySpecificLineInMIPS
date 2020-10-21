@@ -1,0 +1,117 @@
+.data
+	file: .asciiz "file.txt"
+	buff: .space 1024
+	n: .asciiz " "
+.text
+main:
+	li $v0, 13
+	la $a0,file
+	li $a1, 0
+	li $a2, 0
+	syscall
+	
+	move $s0, $v0
+###############################
+	
+	li $v0, 14
+	move $a0, $s0
+	la $a1, buff
+	li $a2, 1024
+	syscall
+	
+	
+	
+	li $v0, 16
+	move $a0, $s0
+	syscall
+	
+	
+	
+	
+	li $v0, 5
+	syscall
+	move $s7, $v0  ##$s7 = engizgen stroka sany
+	
+	
+	li $t9, 0     #counter
+	li $t8, 0     #counter of \n
+	
+	
+	loop:
+		bne $t8, $s7, count
+		j counter_point
+		count:
+			la $t0, buff
+			add $t2, $t0, $t9
+			lbu $t7, 0($t2)
+			
+			li $s5, 10
+			beq $t7,$s5, save
+			add $t9, $t9, 1
+			j loop
+			
+			save:
+				add $t8, $t8, 1
+				#move $s6, $t9 ##$s6 - bastau index for x > 1
+				add $t9, $t9,1
+				#move $s0, $t9
+				
+				sub $t5, $s7, 1
+				beq $t8, $t5, save_1
+				move $s3, $t9
+				j loop
+				save_1:
+					move $s0, $t9
+					j loop
+				#j loop
+	#
+	#
+	#$s0 ====== bastau indexi
+	#$s3 ====== end index
+	counter_point:
+			li $t0,1
+			bgt $s7,$t0,pointer
+			li $s0,0
+			j exec
+			pointer:
+				#move $t8, $t9
+				#add $t8, $t8,1
+				#move $s3, $t8 #$s3 - bastau indexi	
+				move $s3, $t9
+				j exec
+			#move $a0, $t7
+			#li $v0,11
+			#syscall
+	
+	exec:
+		move $s1, $t9  #$s1 - ayaktau indexi
+		
+		move $t1, $s0
+		move $t3, $s3
+	cye:
+		blt $t1, $t3, show
+		j exit
+		show:
+			la $t0, buff
+			add $t2, $t0, $t1
+			lbu $t7, 0($t2)
+			
+			move $a0, $t7
+			li $v0,11
+			syscall
+			
+			add $t1, $t1,1
+			j cye
+		
+	exit:
+		li $v0,10
+		syscall
+	
+	
+	
+	
+	
+	
+	
+	
+
